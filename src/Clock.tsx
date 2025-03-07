@@ -1,31 +1,22 @@
 import React from 'react';
 
-function getRandomName(): string {
-  const value = Date.now().toString().slice(-4);
-
-  return `Clock-${value}`;
-}
-
 type State = {
   today: Date;
   hasClock: boolean;
-  clockName: string;
 };
 
+type Props = {
+  name: string;
+}
 
-export class Clock extends React.Component<{}, State> {
+export class Clock extends React.Component<Props, State> {
   state: Readonly<State> = {
     today: new Date(),
     hasClock: true,
-    clockName: 'Clock-0',
   };
 
   timerId = 0;
-  clockId = 0;
 
-  handleClockId = () => {
-    this.setState({ clockName: getRandomName() });
-  };
 
   handleTimerId = () => {
     if (this.state.hasClock) {
@@ -37,7 +28,6 @@ export class Clock extends React.Component<{}, State> {
 
   componentDidMount(): void {
     this.timerId = window.setInterval(this.handleTimerId, 1000);
-    this.clockId = window.setInterval(this.handleClockId, 3300);
   }
 
   componentDidUpdate(
@@ -47,27 +37,14 @@ export class Clock extends React.Component<{}, State> {
   ): void {
     if (!prevState.hasClock && this.state.hasClock) {
       this.timerId = window.setInterval(this.handleTimerId, 1000);
-      window.clearInterval(this.clockId);
-      this.clockId = window.setInterval(this.handleClockId, 3300);
     }
 
     if (prevState.hasClock && !this.state.hasClock) {
-      // window.clearInterval(this.clockId);
       window.clearInterval(this.timerId);
-    }
-
-    if (prevState.clockName !== this.state.clockName) {
-      console.warn(
-        `Renamed from ${prevState.clockName} to ${this.state.clockName}`,
-      );
     }
   }
 
   componentWillUnmount(): void {
-    if (this.clockId) {
-      window.clearInterval(this.clockId);
-    }
-
     if (this.timerId) {
       window.clearInterval(this.timerId);
     }
@@ -76,7 +53,7 @@ export class Clock extends React.Component<{}, State> {
   render(): React.ReactNode {
     return (
       <div className="Clock">
-        <strong className="Clock__name">{this.state.clockName}</strong>
+        <strong className="Clock__name">{this.props.name}</strong>
 
         {' time is '}
 
