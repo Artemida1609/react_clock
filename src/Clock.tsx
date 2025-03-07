@@ -7,7 +7,7 @@ type State = {
 
 type Props = {
   name: string;
-}
+};
 
 export class Clock extends React.Component<Props, State> {
   state: Readonly<State> = {
@@ -17,10 +17,10 @@ export class Clock extends React.Component<Props, State> {
 
   timerId = 0;
 
-
   handleTimerId = () => {
     if (this.state.hasClock) {
       this.setState({ today: new Date() });
+
       // eslint-disable-next-line no-console
       console.log(new Date().toUTCString().slice(-12, -4));
     }
@@ -30,24 +30,14 @@ export class Clock extends React.Component<Props, State> {
     this.timerId = window.setInterval(this.handleTimerId, 1000);
   }
 
-  componentDidUpdate(
-    prevProps: Readonly<{}>,
-    prevState: Readonly<State>,
-    snapshot?: any,
-  ): void {
-    if (!prevState.hasClock && this.state.hasClock) {
-      this.timerId = window.setInterval(this.handleTimerId, 1000);
-    }
-
-    if (prevState.hasClock && !this.state.hasClock) {
-      window.clearInterval(this.timerId);
+  componentDidUpdate(prevProps: Props): void {
+    if (prevProps.name !== this.props.name) {
+      console.warn(`Renamed from ${prevProps.name} to ${this.props.name}`);
     }
   }
 
   componentWillUnmount(): void {
-    if (this.timerId) {
-      window.clearInterval(this.timerId);
-    }
+    window.clearInterval(this.timerId);
   }
 
   render(): React.ReactNode {
